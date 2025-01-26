@@ -1,37 +1,38 @@
 #include <iostream>
 #include <string>
+#include <vector>
 using namespace std;
 
-// struktur untuk menyimpan data kontak
-struct Contact {
-    string nama;
-    string tempat_tinggal;
-    string alamat;
-    string kekuatan;
+class Contact { 
+    public:
+        string nama;
+        string tempat_tinggal;
+        string alamat;
+        string kekuatan;
+        
+        void addContact() {
+            cout << "Nama: ";
+            cin.ignore(); 
+            getline(cin, nama);
+            cout << "Tempat tinggal: ";
+            getline(cin, tempat_tinggal);
+            cout << "Alamat: ";
+            getline(cin, alamat);
+            cout << "Kekuatan: ";
+            getline(cin, kekuatan);
+        }
 
-    void addContact() {
-        cout << "Nama: ";
-        cin.ignore(); // bersihkan buffer sebelum input string
-        getline(cin, nama);
-        cout << "Tempat tinggal: ";
-        getline(cin, tempat_tinggal);
-        cout << "Alamat: ";
-        getline(cin, alamat);
-        cout << "Kekuatan: ";
-        getline(cin, kekuatan);
-    }
-
-    void displayContact() const {
-        cout << "Nama: " << nama << endl;
-        cout << "Tempat tinggal: " << tempat_tinggal << endl;
-        cout << "Alamat: " << alamat << endl;
-        cout << "Kekuatan: " << kekuatan << endl;
-        cout << "--------------------------" << endl;
-    }
+        void displayContact() const {
+            cout << "Nama: " << nama << endl;
+            cout << "Tempat tinggal: " << tempat_tinggal << endl;
+            cout << "Alamat: " << alamat << endl;
+            cout << "Kekuatan: " << kekuatan << endl;
+            cout << "--------------------------" << endl;
+        }
 };
 
-void searchContacts(const Contact contacts[], size_t count) {
-    if (count == 0) {
+void searchContacts(const vector<Contact>& contacts) {
+    if (contacts.empty()) {
         cout << "Belum ada kontak yang tersimpan!" << endl;
         return;
     }
@@ -42,12 +43,12 @@ void searchContacts(const Contact contacts[], size_t count) {
     getline(cin, searchName);
 
     bool found = false;
-    for (size_t i = 0; i < count; i++) {
-        if (contacts[i].nama == searchName) {
+    for (const auto& contact : contacts) {
+        if (contact.nama == searchName) {
             cout << "\nKontak ditemukan:\n";
-            contacts[i].displayContact();
+            contact.displayContact();
             found = true;
-            break; // hentikan pencarian setelah ditemukan
+            break; 
         }
     }
 
@@ -57,11 +58,8 @@ void searchContacts(const Contact contacts[], size_t count) {
 }
 
 int main() {
-    const size_t maxContacts = 8; // jumlah kontak maksimum
-    Contact phoneBook[maxContacts]; // array statis untuk menyimpan kontak
-    size_t contactCount = 0;        // jumlah kontak saat ini
-    size_t nextIndex = 0;           // indeks untuk kontak berikutnya
-
+    vector<Contact> phoneBook; 
+    const size_t maxContacts = 8;
     bool quit = false;
 
     do {
@@ -75,22 +73,19 @@ int main() {
 
         switch (option) {
             case 1: {
-                // tambahkan kontak baru ke array
-                phoneBook[nextIndex].addContact();
+                Contact newContact;
+                newContact.addContact(); 
                 
-                // update indeks berikutnya (melingkar)
-                nextIndex = (nextIndex + 1) % maxContacts;
-
-                // update jumlah kontak (hanya jika belum penuh)
-                if (contactCount < maxContacts) {
-                    contactCount++;
+                if (phoneBook.size() >= maxContacts) {
+                    phoneBook.erase(phoneBook.begin()); 
                 }
-
+                
+                phoneBook.push_back(newContact);
                 cout << "\nKontak berhasil ditambahkan!" << endl;
                 break;
             }
             case 2:
-                searchContacts(phoneBook, contactCount); // cari kontak
+                searchContacts(phoneBook); 
                 break;
             case 3:
                 quit = true;
